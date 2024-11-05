@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class CaesarCipher {
     private CaesarCipher() {
         throw new IllegalStateException("Utility class");
@@ -30,5 +33,16 @@ public class CaesarCipher {
         }
 
         return result.toString();
+    }
+
+    public static Map<Integer, String> bruteForceDecrypt(String text) {
+        Map<Integer, String> possibleDecryptions = new HashMap<>();
+
+        for (int key = 1; key < ALPHABET_SIZE; key++) {
+            String decryptedText = decrypt(text, key);
+            possibleDecryptions.put(key, decryptedText);
+        }
+
+        return possibleDecryptions;
     }
 }
