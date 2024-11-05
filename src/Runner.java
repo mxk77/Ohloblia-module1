@@ -12,7 +12,7 @@ public class Runner {
             switch (command) {
                 case ENCRYPT -> encryptFile(filePath, key);
                 case DECRYPT -> decryptFile(filePath, key);
-                case BRUTE_FORCE -> bruteForce(filePath);
+                case BRUTE_FORCE -> bruteForceFile(filePath);
             }
         } catch (RuntimeException e){
             System.err.println(e.getMessage());
@@ -39,7 +39,7 @@ public class Runner {
             throw new RuntimeException("Помилка при дешифрації файлу: " + e.getMessage(), e);
         }
     }
-    private void bruteForce(Path filePath){
+    private void bruteForceFile(Path filePath){
 
     }
 

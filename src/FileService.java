@@ -7,6 +7,9 @@ public class FileService {
         throw new IllegalStateException("Utility class");
     }
 
+    private static final String ENCRYPTED="[ENCRYPTED]";
+    private static final String DECRYPTED="[DECRYPTED]";
+
     //Зчитуємо вміст файлу у рядок
     public static String readFile(Path filePath) throws IOException {
         return Files.readString(filePath);
@@ -25,7 +28,9 @@ public class FileService {
 
     //Додаємо суфікс до імені файлу
     private static Path generateFileNameWithSuffix(Path originalFilePath, String suffix) {
-        String fileName = originalFilePath.getFileName().toString();
+        String fileName = originalFilePath.getFileName().toString()
+                .replace(ENCRYPTED, "")
+                .replace(DECRYPTED, "");
         int dotIndex = fileName.lastIndexOf(".");
         String newFileName;
 
