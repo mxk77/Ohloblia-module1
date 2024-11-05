@@ -1,65 +1,75 @@
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Runner {
     public void run(final String[] args){
-        final Command command=checkCommand(args);
-        final Path filePath=checkFile(args);
-        final Integer key=checkKey(args, command);
-        if (command==null || filePath==null || key==null){
-            return;
-        }
+        try {
+            final Command command=checkCommand(args);
+            final Path filePath=checkFile(args);
+            final int key=checkKey(args, command);
 
-        switch (command) {
-            case ENCRYPT -> encryptFile(filePath, key);
-            case DECRYPT -> decryptFile(filePath, key);
-            case BRUTE_FORCE -> bruteForce(filePath);
+            switch (command) {
+                case ENCRYPT -> encryptFile(filePath, key);
+                case DECRYPT -> decryptFile(filePath, key);
+                case BRUTE_FORCE -> bruteForce(filePath);
+            }
+        } catch (RuntimeException e){
+            System.err.println(e.getMessage());
         }
     }
 
     private void encryptFile(Path filePath, int key){
-
+        try {
+            String content = FileService.readFile(filePath);
+            String encryptedContent = CaesarCipher.encrypt(content, key);
+            FileService.writeWithSuffix(filePath, encryptedContent, "[ENCRYPTED]");
+            System.out.println("Файл зашифровано успішно!");
+        } catch (IOException e) {
+            throw new RuntimeException("Помилка при шифруванні файлу: " + e.getMessage(), e);
+        }
     }
     private void decryptFile(Path filePath, int key){
-
+        try {
+            String content = FileService.readFile(filePath);
+            String decryptedContent = CaesarCipher.decrypt(content, key);
+            FileService.writeWithSuffix(filePath, decryptedContent, "[DECRYPTED]");
+            System.out.println("Файл дешифровано успішно!");
+        } catch (IOException e) {
+            throw new RuntimeException("Помилка при дешифрації файлу: " + e.getMessage(), e);
+        }
     }
     private void bruteForce(Path filePath){
 
     }
 
-    private Command checkCommand(final String [] args){
-        Command command=null;
+    private Command checkCommand(final String[] args) {
         try {
-            command = Command.valueOf(args[0].toUpperCase());
+            return Command.valueOf(args[0].toUpperCase());
         } catch (IllegalArgumentException e) {
-            System.err.println("Помилка: Невірна команда! Доступні команди: ENCRYPT, DECRYPT, BRUTE_FORCE.");
+            throw new RuntimeException("Помилка: Невірна команда! Доступні команди: ENCRYPT, DECRYPT, BRUTE_FORCE.");
         }
-        return command;
     }
 
-    private Path checkFile(final String [] args){
-        Path filePath=Path.of(args[1]);
+    private Path checkFile(final String[] args) {
+        Path filePath = Path.of(args[1]);
         if (!Files.exists(filePath)) {
-            System.err.println("Помилка: Вказаного файлу не існує!");
-            return null;
+            throw new RuntimeException("Помилка: Вказаного файлу не існує!");
         }
         return filePath;
     }
 
-    private Integer checkKey(final String [] args,Command command){
-        Integer key=null;
-
+    private int checkKey(final String[] args, Command command) {
         if (command == Command.ENCRYPT || command == Command.DECRYPT) {
             if (args.length < 3) {
-                System.err.println("Помилка: Аргумент <Key> обов'язковий!");
-                return key;
+                throw new RuntimeException("Помилка: Аргумент <Key> обов'язковий!");
             }
             try {
-                key = Integer.parseInt(args[2]);
+                return Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
-                System.err.println("Помилка: Ключ має бути числом!");
+                throw new RuntimeException("Помилка: Ключ має бути числом!");
             }
         }
-        return key;
+        return -1;
     }
 }
