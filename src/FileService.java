@@ -8,30 +8,33 @@ public class FileService {
     }
 
     //Зчитуємо вміст файлу у рядок
-    public static String readFile(String filePath) throws IOException {
-        Path path = Path.of(filePath);
-        return Files.readString(path);
+    public static String readFile(Path filePath) throws IOException {
+        return Files.readString(filePath);
     }
 
     //Записуємо новий вміст у файл за вказаним шляхом
-    private static void writeFile(String filePath, String content) throws IOException {
-        Path path = Path.of(filePath);
-        Files.writeString(path, content);
+    private static void writeFile(Path filePath, String content) throws IOException {
+        Files.writeString(filePath, content);
     }
 
     //Записуємо наданий вміст у файл в одній і тій самій директорії, що й оригінальний файл, але до його імені додаємо суфікс
-    public static void writeWithSuffix(String originalFilePath, String content, String suffix) throws IOException {
-        String newFilePath = generateFileNameWithSuffix(originalFilePath, suffix);
+    public static void writeWithSuffix(Path originalFilePath, String content, String suffix) throws IOException {
+        Path newFilePath = generateFileNameWithSuffix(originalFilePath, suffix);
         writeFile(newFilePath, content);
     }
 
     //Додаємо суфікс до імені файлу
-    private static String generateFileNameWithSuffix(String originalFilePath, String suffix) {
-        int dotIndex = originalFilePath.lastIndexOf(".");
+    private static Path generateFileNameWithSuffix(Path originalFilePath, String suffix) {
+        String fileName = originalFilePath.getFileName().toString();
+        int dotIndex = fileName.lastIndexOf(".");
+        String newFileName;
+
         if (dotIndex == -1) {
-            return originalFilePath + suffix;
+            newFileName = fileName + suffix;
         } else {
-            return originalFilePath.substring(0, dotIndex) + suffix + originalFilePath.substring(dotIndex);
+            newFileName = fileName.substring(0, dotIndex) + suffix + fileName.substring(dotIndex);
         }
+
+        return originalFilePath.getParent().resolve(newFileName);
     }
 }
