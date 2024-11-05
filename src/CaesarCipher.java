@@ -6,14 +6,19 @@ public class CaesarCipher {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,«»\"':!? ";
-    private static final int ALPHABET_SIZE = ALPHABET.length();
+    private static final String ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,«»\"':!? ";
+    private static final String UKRAINIAN_ALPHABET = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя.,«»\"':!? ";
+
+    private static String currentAlphabet = ENGLISH_ALPHABET;
+    private static int alphabetSize = currentAlphabet.length();
 
     public static String encrypt(String text, int key) {
+        selectAlphabet(text);
         return shiftText(text, key);
     }
 
     public static String decrypt(String text, int key) {
+        selectAlphabet(text);
         return shiftText(text, -key);
     }
 
@@ -22,12 +27,12 @@ public class CaesarCipher {
         StringBuilder result = new StringBuilder();
 
         for (char character : text.toCharArray()) {
-            int index = ALPHABET.indexOf(character);
+            int index = currentAlphabet.indexOf(character);
 
-            if (index != -1) {  //Якщо символ є у вказаному алфавіті - зсуваємо
-                int shiftedIndex = (index + shift + ALPHABET_SIZE) % ALPHABET_SIZE;
-                result.append(ALPHABET.charAt(shiftedIndex));
-            } else {
+            if (index != -1) {  // Character is in the selected alphabet
+                int shiftedIndex = (index + shift + alphabetSize) % alphabetSize;
+                result.append(currentAlphabet.charAt(shiftedIndex));
+            } else {  // Character is not in the alphabet, add it as-is
                 result.append(character);
             }
         }
@@ -35,10 +40,24 @@ public class CaesarCipher {
         return result.toString();
     }
 
+    private static void selectAlphabet(String text) {
+        //Перевіряємо чи символ належить українському алфавіту
+        for (char character : text.toCharArray()) {
+            if (UKRAINIAN_ALPHABET.indexOf(character) != -1 && Character.isLetter(character)) {
+                currentAlphabet = UKRAINIAN_ALPHABET;
+                alphabetSize = currentAlphabet.length();
+                return;
+            }
+        }
+        currentAlphabet = ENGLISH_ALPHABET;
+        alphabetSize = currentAlphabet.length();
+    }
+
     public static Map<Integer, String> bruteForceDecrypt(String text) {
+        selectAlphabet(text);
         Map<Integer, String> possibleDecryptions = new HashMap<>();
 
-        for (int key = 1; key < ALPHABET_SIZE; key++) {
+        for (int key = 1; key < alphabetSize; key++) {
             String decryptedText = decrypt(text, key);
             possibleDecryptions.put(key, decryptedText);
         }
