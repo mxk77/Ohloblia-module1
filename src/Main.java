@@ -4,12 +4,10 @@
 public class Main {
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.err.println("Помилка: Недостатня кількість аргументів! " +
-                    "Використання: java -jar myApp.jar <command> <filePath> <key>");
-            return;
+            new CLI().start();
+        }else {
+            new Runner().run(args);
         }
-
-        new Runner().run(args);
     }
 
 }

@@ -3,10 +3,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Runner {
+
     public void run(final String[] args){
         try {
-            final Command command=checkCommand(args);
-            final Path filePath=checkFile(args);
+            final Command command=checkCommand(args[0]);
+            final Path filePath=checkFile(args[1]);
             final int key=checkKey(args, command);
 
             switch (command) {
@@ -43,23 +44,30 @@ public class Runner {
 
     }
 
-    private Command checkCommand(final String[] args) {
+    Command checkCommand(String commandString) {
         try {
-            return Command.valueOf(args[0].toUpperCase());
+            return Command.valueOf(commandString.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Помилка: Невірна команда! Доступні команди: ENCRYPT, DECRYPT, BRUTE_FORCE.");
         }
     }
 
-    private Path checkFile(final String[] args) {
-        Path filePath = Path.of(args[1]);
+    Path checkFile(String filePathString) {
+        Path filePath = sanitizePath(filePathString);
         if (!Files.exists(filePath)) {
             throw new RuntimeException("Помилка: Вказаного файлу не існує!");
         }
         return filePath;
     }
 
-    private int checkKey(final String[] args, Command command) {
+    private Path sanitizePath(String inputPath) {
+        if (inputPath.startsWith("\"") && inputPath.endsWith("\"")) {
+            inputPath = inputPath.substring(1, inputPath.length() - 1);
+        }
+        return Path.of(inputPath);
+    }
+
+    int checkKey(String[] args, Command command) {
         if (command == Command.ENCRYPT || command == Command.DECRYPT) {
             if (args.length < 3) {
                 throw new RuntimeException("Помилка: Аргумент <Key> обов'язковий!");
