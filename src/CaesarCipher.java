@@ -12,6 +12,10 @@ public class CaesarCipher {
     private static String currentAlphabet = ENGLISH_ALPHABET;
     private static int alphabetSize = currentAlphabet.length();
 
+    public static String getUkrainianAlphabet(){
+        return UKRAINIAN_ALPHABET;
+    }
+
     public static String encrypt(String text, int key) {
         selectAlphabet(text);
         return shiftText(text, key);
@@ -51,9 +55,5 @@ public class CaesarCipher {
         }
         currentAlphabet = ENGLISH_ALPHABET;
         alphabetSize = currentAlphabet.length();
-    }
-
-    public static String bruteForceDecrypt(String text) {
-        return null;
     }
 }

@@ -49,7 +49,7 @@ public class Runner {
                 textForStaticAnalysis = FileService.readFile(filePathForStaticAnalysis);
             }
 
-            BruteForcer bruteForcer = new BruteForcer(textForStaticAnalysis);
+            BruteForcer bruteForcer = new BruteForcer(textForStaticAnalysis, content);
             bruteForcer.bruteForce(content);
 
             int mostLikelyKey = bruteForcer.getMostLikelyKey();
