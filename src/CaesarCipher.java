@@ -6,8 +6,8 @@ public class CaesarCipher {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final String ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,«»\"':!? ";
-    private static final String UKRAINIAN_ALPHABET = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя.,«»\"':!? ";
+    private static final String ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String UKRAINIAN_ALPHABET = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя";
 
     private static String currentAlphabet = ENGLISH_ALPHABET;
     private static int alphabetSize = currentAlphabet.length();
@@ -22,7 +22,7 @@ public class CaesarCipher {
         return shiftText(text, -key);
     }
 
-    //Метод для зсуву символів рядку по алфавіту за визначеним значенням
+    //Метод для зсуву символів рядка по алфавіту за визначеним значенням
     private static String shiftText(String text, int shift) {
         StringBuilder result = new StringBuilder();
 
@@ -53,15 +53,7 @@ public class CaesarCipher {
         alphabetSize = currentAlphabet.length();
     }
 
-    public static Map<Integer, String> bruteForceDecrypt(String text) {
-        selectAlphabet(text);
-        Map<Integer, String> possibleDecryptions = new HashMap<>();
-
-        for (int key = 1; key < alphabetSize; key++) {
-            String decryptedText = decrypt(text, key);
-            possibleDecryptions.put(key, decryptedText);
-        }
-
-        return possibleDecryptions;
+    public static String bruteForceDecrypt(String text) {
+        return null;
     }
 }
