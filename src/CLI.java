@@ -13,22 +13,15 @@ public class CLI {
     public void start() {
         Command command = promptCommand();
         Path filePath = promptFilePath();
-        String key = null;
+        int key = 0;
         Path filePathForStaticAnalysis = null;
 
         if (command == Command.BRUTE_FORCE) {
             filePathForStaticAnalysis = promptOptionalFilePathForStaticAnalysis();
         } else {
-            key = promptKey(command).toString();
+            key = promptKey(command);
         }
-
-        if (command == Command.BRUTE_FORCE && filePathForStaticAnalysis != null) {
-            runner.run(new String[]{command.name(), filePath.toString(), filePathForStaticAnalysis.toString()});
-        } else if (command == Command.BRUTE_FORCE) {
-            runner.run(new String[]{command.name(), filePath.toString()});
-        } else {
-            runner.run(new String[]{command.name(), filePath.toString(), key});
-        }
+         runner.run(command,filePath,key,filePathForStaticAnalysis);
     }
 
     private Command promptCommand() {

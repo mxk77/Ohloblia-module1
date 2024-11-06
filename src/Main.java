@@ -6,7 +6,7 @@ public class Main {
         if (args.length < 2) {
             new CLI().start();
         }else {
-            new Runner().run(args);
+            new Runner().runWithArgs(args);
         }
     }
 }

@@ -18,10 +18,6 @@ public class BruteForcer {
         }
     }
 
-    public BruteForcer(String encryptedText) {
-        this(null, encryptedText);
-    }
-
     private static Map<Character, Double> createEnglishFrequencyMap() {
         Map<Character, Double> map = new HashMap<>();
         char[] letters = {'e', 'a', 'r', 'i', 'o', 't', 'n', 's', 'l', 'c', 'u', 'd', 'p', 'm', 'h', 'g', 'b', 'f',
