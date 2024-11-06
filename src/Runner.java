@@ -67,15 +67,17 @@ public class Runner {
             bruteForcer.bruteForce(content);
 
             int mostLikelyKey = bruteForcer.getMostLikelyKey();
+
+            if (mostLikelyKey==0){
+                System.out.println("Файл не вдалось розшифрувати(:");
+                return;
+            }
+
             String mostLikelyText = bruteForcer.getMostLikelyText();
 
             FileService.writeWithSuffix(filePath, mostLikelyText, "[BRUTE_FORCE " + mostLikelyKey + "]");
 
-            if (mostLikelyKey!=0){
-                System.out.println("Файл дешифровано успішно з ключем: " + mostLikelyKey);
-            } else {
-                System.out.println("Файл не вдалось розшифрувати(");
-            }
+            System.out.println("Файл дешифровано успішно з ключем: " + mostLikelyKey);
         } catch (IOException e) {
             throw new RuntimeException("Помилка при дешифрації файлу: " + e.getMessage(), e);
         }
