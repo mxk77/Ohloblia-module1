@@ -9,11 +9,12 @@ public class Runner {
             final Command command=checkCommand(args[0]);
             final Path filePath=checkFile(args[1]);
             final int key=checkKey(args, command);
+            final Path filePathForStaticAnalysis = checkFilePathForStaticAnalysis(args, command);
 
             switch (command) {
                 case ENCRYPT -> encryptFile(filePath, key);
                 case DECRYPT -> decryptFile(filePath, key);
-                case BRUTE_FORCE -> bruteForceFile(filePath);
+                case BRUTE_FORCE -> bruteForceFile(filePath,filePathForStaticAnalysis);
             }
         } catch (RuntimeException e){
             System.err.println(e.getMessage());
@@ -40,9 +41,28 @@ public class Runner {
             throw new RuntimeException("Помилка при дешифрації файлу: " + e.getMessage(), e);
         }
     }
-    private void bruteForceFile(Path filePath){
+    private void bruteForceFile(Path filePath, Path filePathForStaticAnalysis) {
+        try {
+            String content = FileService.readFile(filePath);
+            String textForStaticAnalysis = null;
+            if (filePathForStaticAnalysis != null) {
+                textForStaticAnalysis = FileService.readFile(filePathForStaticAnalysis);
+            }
 
+            BruteForcer bruteForcer = new BruteForcer(textForStaticAnalysis);
+            bruteForcer.bruteForce(content);
+
+            int mostLikelyKey = bruteForcer.getMostLikelyKey();
+            String mostLikelyText = bruteForcer.getMostLikelyText();
+
+            FileService.writeWithSuffix(filePath, mostLikelyText, "[BRUTE_FORCE " + mostLikelyKey + "]");
+
+            System.out.println("Файл дешифровано успішно з ключем: " + mostLikelyKey);
+        } catch (IOException e) {
+            throw new RuntimeException("Помилка при дешифрації файлу: " + e.getMessage(), e);
+        }
     }
+
 
     Command checkCommand(String commandString) {
         try {
@@ -79,5 +99,16 @@ public class Runner {
             }
         }
         return -1;
+    }
+
+    Path checkFilePathForStaticAnalysis(String[] args, Command command) {
+        if (command == Command.BRUTE_FORCE && args.length >= 3) {
+            Path filePathForStaticAnalysis = sanitizePath(args[2]);
+            if (!Files.exists(filePathForStaticAnalysis)) {
+                throw new RuntimeException("Помилка: Файлу для частотного аналізу не існує!");
+            }
+            return filePathForStaticAnalysis;
+        }
+        return null;
     }
 }

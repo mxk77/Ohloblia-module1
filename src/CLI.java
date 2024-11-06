@@ -13,22 +13,31 @@ public class CLI {
     public void start() {
         Command command = promptCommand();
         Path filePath = promptFilePath();
-        String key = "";
+        String key = null;
+        Path filePathForStaticAnalysis = null;
 
-        if (command != Command.BRUTE_FORCE){
-            key=promptKey(command).toString();
+        if (command == Command.BRUTE_FORCE) {
+            filePathForStaticAnalysis = promptOptionalFilePathForStaticAnalysis();
+        } else {
+            key = promptKey(command).toString();
         }
 
-        new Runner().run(new String[]{command.name(), filePath.toString(), key});
+        if (command == Command.BRUTE_FORCE && filePathForStaticAnalysis != null) {
+            runner.run(new String[]{command.name(), filePath.toString(), filePathForStaticAnalysis.toString()});
+        } else if (command == Command.BRUTE_FORCE) {
+            runner.run(new String[]{command.name(), filePath.toString()});
+        } else {
+            runner.run(new String[]{command.name(), filePath.toString(), key});
+        }
     }
 
     private Command promptCommand() {
         Command command = null;
         while (command == null) {
-            System.out.println("Введіть команду:");
+            System.out.println("Введіть команду (ENCRYPT, DECRYPT, або BRUTE_FORCE):");
             String input = scanner.nextLine().trim();
 
-            try{
+            try {
                 command = runner.checkCommand(input);
             } catch (RuntimeException e) {
                 System.err.println(e.getMessage());
@@ -63,8 +72,21 @@ public class CLI {
             } catch (RuntimeException e) {
                 System.err.println(e.getMessage());
             }
-
         }
         return key;
+    }
+
+    private Path promptOptionalFilePathForStaticAnalysis() {
+        System.out.println("Введіть повний шлях до файлу для частотного аналізу (або залиште порожнім, щоб пропустити):");
+        String pathInput = scanner.nextLine().trim();
+
+        if (!pathInput.isEmpty()) {
+            try {
+                return runner.checkFile(pathInput);
+            } catch (RuntimeException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        return null;
     }
 }
